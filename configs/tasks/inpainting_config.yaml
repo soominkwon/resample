@@ -1,0 +1,23 @@
+conditioning:
+  main_sampler: resample
+  method: ps # Do not touch
+  params:
+    scale: 0.5
+
+data:
+  name: celeb
+  root: ./data/samples/
+
+measurement:
+  operator:
+    name: inpainting
+  mask_opt:
+    mask_type: box
+    mask_len_range: !!python/tuple [128, 129]  # for box
+    #mask_prob_range: !!python/tuple [0.7, 0.71]  # for random
+    image_size: 256
+
+
+  noise:
+    name: gaussian
+    sigma: 0.01

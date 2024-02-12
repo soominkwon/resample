@@ -1,0 +1,19 @@
+conditioning:
+  main_sampler: resample
+  method: ps # Do not touch
+  params:
+    scale: 1.0
+
+data:
+  name: celeb
+  root: ./data/samples/
+
+measurement:
+  operator:
+    name: motion_blur
+    kernel_size: 61
+    intensity: 0.5
+
+  noise: 
+    name: gaussian
+    sigma: 0.00
