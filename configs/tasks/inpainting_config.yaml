@@ -12,9 +12,8 @@ measurement:
   operator:
     name: inpainting
   mask_opt:
-    mask_type: box
-    mask_len_range: !!python/tuple [128, 129]  # for box
-    #mask_prob_range: !!python/tuple [0.7, 0.71]  # for random
+    mask_type: random
+    mask_prob_range: !!python/tuple [0.7, 0.71]
     image_size: 256
 
 
