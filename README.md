@@ -27,7 +27,7 @@ unzip models/ldm/ffhq.zip -d ./models/ldm
 
 mkdir -p models/first_stage_models/vq-f4
 wget https://ommer-lab.com/files/latent-diffusion/vq-f4.zip -P ./models/first_stage_models/vq-f4
-unzip models/first_stage_models/vq-f4.zip -d ./models/first_stage_models
+unzip models/first_stage_models/vq-f4/vq-f4.zip -d ./models/first_stage_models/vq-f4
 ```
 
 <br />
