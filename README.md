@@ -2,6 +2,10 @@
 
 ![example](https://github.com/soominkwon/resample/blob/main/figures/resample_ex.png)
 
+## Abstract
+
+In this work, we propose ReSample, an algorithm that can solve general inverse problems with pre-trained latent diffusion models. Our algorithm incorporates data consistency by solving an optimization problem during the reverse sampling process, a concept that we term as hard data consistency. Upon solving this optimization problem, we propose a novel resampling scheme to map the measurement-consistent sample back onto the noisy data manifold.
+
 ## Getting Started
 
 ### 1) Clone the repository
