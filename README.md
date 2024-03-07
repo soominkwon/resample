@@ -45,11 +45,8 @@ git clone https://github.com/LeviBorodenko/motionblur motionblur
 Install dependencies
 
 ```
-conda create -n ldm python=3.8
+conda env create -f environment.yaml
 
-conda activate ldm
-
-pip install -r requirements.txt TODO: Add this
 ```
 
 <br />
