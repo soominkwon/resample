@@ -74,6 +74,15 @@ The code is currently configured to do inference on FFHQ. You can download the c
 - configs/tasks/nonlinear_deblur_config.yaml
 ```
 
+<br />
+
+## Hyperparameter Tuning
+
+For the best results, please refer to the hyperparameters reported in the paper. Recall that we use two types of optimizations for hard data consistency: latent space and pixel space optimization. For the fastest inference, one can use just pixel space optimization, but with a degradation in performance. One can change the splits of pixel space and latent space optimization by tuning the index split value in the main DDIM code. We suggest to use both as reported in the main paper. 
+
+<br />
+
+
 ## Citation
 If you find our work interesting, please consider citing
 
