@@ -1,4 +1,4 @@
-# Solving Inverse Problems with Latent Diffusion Models via Hard Data Consistency (ICLR 2024, Spotlight)
+# Solving Inverse Problems with Latent Diffusion Models via Hard Data Consistency (ICLR 2024)
 
 ![example](https://github.com/soominkwon/resample/blob/main/figures/resample_ex.png)
 
@@ -45,7 +45,7 @@ conda create -n ldm python=3.8
 
 conda activate ldm
 
-pip install -r requirements.txt
+pip install -r requirements.txt TODO: Add this
 ```
 
 <br />
