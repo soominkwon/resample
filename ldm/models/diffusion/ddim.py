@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 from functools import partial
-from utils import *
+from scripts.utils import *
 
 from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like, \
     extract_into_tensor
@@ -122,7 +122,6 @@ class DDIMSampler(object):
                S,
                batch_size,
                shape,
-               true_img=None,
                cond_method=None,
                conditioning=None,
                callback=None,
@@ -164,7 +163,7 @@ class DDIMSampler(object):
 
         if cond_method is None or cond_method == 'resample':
             samples, intermediates = self.resample_sampling(measurement, measurement_cond_fn,
-                                                    conditioning, size, true_img=true_img,
+                                                    conditioning, size,
                                                         operator_fn=operator_fn,
                                                         callback=callback,
                                                         img_callback=img_callback,
@@ -188,7 +187,7 @@ class DDIMSampler(object):
 
 
     def resample_sampling(self, measurement, measurement_cond_fn, cond, shape, operator_fn=None,
-                     inter_timesteps=10, true_img=None, x_T=None, ddim_use_original_steps=False,
+                     inter_timesteps=10, x_T=None, ddim_use_original_steps=False,
                      callback=None, timesteps=None, quantize_denoised=False,
                      mask=None, x0=None, img_callback=None, log_every_t=100,
                      temperature=1., noise_dropout=0., score_corrector=None, corrector_kwargs=None,
@@ -255,11 +254,12 @@ class DDIMSampler(object):
 
             img, _ = measurement_cond_fn(x_t=out, # x_t is x_{t-1}
                                             measurement=measurement,
-                                            noisy_measurement=None,
+                                            noisy_measurement=measurement,
                                             x_prev=img, # x_prev is x_t
                                             x_0_hat=pseudo_x0,
                                             scale=a_t*.5, # For DPS learning rate / scale
                                             )
+            
             # Instantiating time-travel parameters
             splits = 3 # TODO: make this not hard-coded
             index_split = total_steps // splits
@@ -312,14 +312,12 @@ class DDIMSampler(object):
                         # Enforcing consistency via latent space optimization
                         pseudo_x0, _ = self.latent_optimization(measurement=measurement,
                                                              z_init=pseudo_x0.detach(),
-                                                             operator_fn=operator_fn, true_img = true_img)
+                                                             operator_fn=operator_fn)
 
 
                         sigma = 40 * (1-a_prev)/(1 - a_t) * (1 - a_t / a_prev) # Change the 40 value for each task
 
                         img = self.stochastic_resample(pseudo_x0=pseudo_x0, x_t=x_t, a_t=a_prev, sigma=sigma) 
-
-            print(psnr( clear_color(true_img), clear_color( self.model.decode_first_stage(img) ) ))
 
             # Callback functions if needed
             if callback: callback(i)
@@ -330,7 +328,7 @@ class DDIMSampler(object):
                 
         psuedo_x0, _ = self.latent_optimization(measurement=measurement,
                                                              z_init=img.detach(),
-                                                             operator_fn=operator_fn, true_img = true_img)
+                                                             operator_fn=operator_fn)
         img = psuedo_x0.detach().clone()
             
         return img, intermediates
