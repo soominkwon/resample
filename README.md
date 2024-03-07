@@ -42,11 +42,10 @@ git clone https://github.com/VinAIResearch/blur-kernel-space-exploring bkse
 git clone https://github.com/LeviBorodenko/motionblur motionblur
 ```
 
-Install dependencies
+Install dependencies via
 
 ```
 conda env create -f environment.yaml
-
 ```
 
 <br />
