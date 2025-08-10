@@ -14,6 +14,10 @@ import argparse
 from omegaconf import OmegaConf
 from ldm.util import instantiate_from_config
 from skimage.metrics import peak_signal_noise_ratio as psnr
+from src.operators.tile_center import A as A_tile, AT as AT_tile
+from src.data.micro_dataset import build_image_dataset
+from src.utils.io_helpers import save_tensor_as_image
+
 
 
 def get_model(args):
@@ -30,6 +34,12 @@ parser.add_argument('--diffusion_config', default="models/ldm/model.ckpt", type=
 parser.add_argument('--task_config', default="configs/tasks/gaussian_deblur_config.yaml", type=str)
 parser.add_argument('--gpu', type=int, default=0)
 parser.add_argument('--save_dir', type=str, default='./results')
+parser.add_argument("--data-root", type=str, default=None)
+parser.add_argument("--save-root", type=str, default=None)
+parser.add_argument("--s", type=int, default=None)
+parser.add_argument("--steps", type=int, default=None)
+parser.add_argument("--dc-weight", type=float, default=None)
+
 parser.add_argument('--ddim_steps', default=500, type=int)
 parser.add_argument('--ddim_eta', default=0.0, type=float)
 parser.add_argument('--n_samples_per_class', default=1, type=int)
@@ -40,11 +50,39 @@ args = parser.parse_args()
 
 # Load configurations
 task_config = load_yaml(args.task_config)
+if args.data_root is not None:
+    task_config["data_root"] = args.data_root
+if args.save_root is not None:
+    task_config["save_root"] = args.save_root
+if args.s is not None:
+    task_config["s"] = args.s
+if args.steps is not None:
+    task_config["steps"] = args.steps
+if args.dc_weight is not None:
+    task_config["dc_weight"] = args.dc_weight
+
 
 # Device setting
 device_str = f"cuda:0" if torch.cuda.is_available() else 'cpu'
 print(f"Device set to {device_str}.")
 device = torch.device(device_str)  
+if task_config.get("task_name") == "tile_center":
+    dataset = build_image_dataset(root=task_config["data_root"], image_size=task_config["image_size"])
+    loader = torch.utils.data.DataLoader(dataset, batch_size=task_config["batch_size"], shuffle=False)
+    for batch in loader:
+        gt = batch["img"].to(device)
+        B, C, H, W = gt.shape
+        s = int(task_config["s"])
+        with torch.no_grad():
+            y = A_tile(gt, s)
+        if task_config.get("save_measurements", True):
+            save_tensor_as_image(y, out_dir=os.path.join(task_config["save_root"], f"s{s}", "meas"))
+        recon = AT_tile(y, s, H, W)
+        if task_config.get("save_recon", True):
+            save_tensor_as_image(recon, out_dir=os.path.join(task_config["save_root"], f"s{s}", "recon"))
+        save_tensor_as_image(gt, out_dir=os.path.join(task_config["save_root"], f"s{s}", "gt"))
+    raise SystemExit
+
 
 # Loading model
 model = get_model(args)

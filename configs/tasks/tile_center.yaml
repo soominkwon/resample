@@ -1,0 +1,16 @@
+task_name: tile_center
+image_size: 256
+channels: 3
+
+s: 3
+steps: 150
+dc_weight: 0.5
+
+data_root: data/micro/gt
+save_root: outputs/tile_center
+
+seed: 42
+batch_size: 1
+fp16: true
+save_measurements: true
+save_recon: true
